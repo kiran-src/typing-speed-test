@@ -31,15 +31,28 @@ def timer_count(m, s):
 timer_tag = Label(text="0:00", font=("Arial", 13, "bold"))
 timer_tag.pack()
 
+
+def press(aa):
+    if not start:
+        typed = typing_box.get("1.0", END)[:-1]
+        length = len(typed)
+        if typed == to_type[:length]:
+            window.config(bg="green")
+            if length == len(to_type):
+                start_timer()
+        else:
+            window.config(bg="red")
+
+
+
 typing_box = Text(height=8, width=80, font=("Arial", 12))
 typing_box.focus()
+typing_box.bind('<KeyRelease>', press)
 typing_box.pack()
 
 
 def wpm(timer):
     splt = timer.split(':')
-    print(float(len(to_type.split(' '))))
-    print(60.0*float(splt[0]) + float(splt[1]))
     return ((60.0*float(len(to_type.split(' '))))/(60.0*float(splt[0]) + float(splt[1])))
 
 
@@ -51,11 +64,14 @@ def start_timer():
         start_button.config(text="Stop")
         timer_count(0, 0)
         start = False
+        typing_box.delete("1.0", END)
+        typing_box.focus()
     else:
         start_button.config(text="Start")
         window.after_cancel(timer)
+        window.config(bg="#f7f5dd")
         if typing_box.get("1.0", END)[:-1] == to_type:
-            timer_tag.config(text=f"Congrats!\nYour time is {timer_tag.cget('text')}\n Your WPM is {wpm(timer_tag.cget('text'))}")
+            timer_tag.config(text=f"Congrats!\nYour time is {timer_tag.cget('text')}\n Your WPM is " + f'{wpm(timer_tag.cget("text")):.2f}')
         else:
             timer_tag.config(text=f"You failed!\nYour time is {timer_tag.cget('text')}")
         start = True
