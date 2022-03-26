@@ -2,7 +2,7 @@ from random import choice
 from tkinter import *
 import textwrap
 
-sentences_file = open("text.txt", 'r')
+sentences_file = open("sentences.txt", 'r')
 sentences = sentences_file.read().splitlines()
 sentences_file.close()
 timer = None
