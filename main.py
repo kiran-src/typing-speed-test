@@ -2,11 +2,12 @@ from random import choice
 from tkinter import *
 import textwrap
 
-sentences_file = open("sentences.txt", 'r')
+sentences_file = open("text.txt", 'r')
 sentences = sentences_file.read().splitlines()
 sentences_file.close()
 timer = None
 start=True
+to_type = ''
 
 # Creating a new window and configurations
 window = Tk()
@@ -23,7 +24,7 @@ def timer_count(m, s):
     if s == 60:
         s = 0
         m += 1
-    timer_tag.config(text=f"{m}:{s}")
+    timer_tag.config(text=f"{m}".zfill(1) + ":" + f"{s}".zfill(2))
     timer = window.after(1000, timer_count, m, s+1)
 
 
@@ -32,21 +33,31 @@ timer_tag.pack()
 
 typing_box = Text(height=8, width=80, font=("Arial", 12))
 typing_box.focus()
-typed = typing_box.get("1.0", END)
 typing_box.pack()
 
 
+def wpm(timer):
+    splt = timer.split(':')
+    print(float(len(to_type.split(' '))))
+    print(60.0*float(splt[0]) + float(splt[1]))
+    return ((60.0*float(len(to_type.split(' '))))/(60.0*float(splt[0]) + float(splt[1])))
+
+
 def start_timer():
-    global start
+    global start, to_type
     if start:
-        paragraph.config(text=textwrap.fill(choice(sentences), width=80))
+        to_type = choice(sentences)
+        paragraph.config(text=textwrap.fill(to_type, width=80))
         start_button.config(text="Stop")
         timer_count(0, 0)
         start = False
     else:
         start_button.config(text="Start")
         window.after_cancel(timer)
-        timer_tag.config(text=f"Congrats!\nYour time is {timer_tag.cget('text')}")
+        if typing_box.get("1.0", END)[:-1] == to_type:
+            timer_tag.config(text=f"Congrats!\nYour time is {timer_tag.cget('text')}\n Your WPM is {wpm(timer_tag.cget('text'))}")
+        else:
+            timer_tag.config(text=f"You failed!\nYour time is {timer_tag.cget('text')}")
         start = True
 
 
